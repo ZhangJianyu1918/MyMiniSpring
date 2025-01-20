@@ -1,0 +1,4 @@
+package org.spring.beans;
+
+public class BeansException {
+}
