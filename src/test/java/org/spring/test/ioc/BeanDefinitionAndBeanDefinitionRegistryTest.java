@@ -3,6 +3,7 @@ package org.spring.test.ioc;
 import org.junit.jupiter.api.Test;
 import org.spring.beans.factory.config.BeanDefinition;
 import org.spring.beans.factory.support.DefaultListableBeanFactory;
+import org.spring.test.ioc.service.HelloService;
 
 public class BeanDefinitionAndBeanDefinitionRegistryTest {
 
