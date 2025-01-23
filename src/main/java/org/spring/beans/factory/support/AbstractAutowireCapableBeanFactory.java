@@ -4,31 +4,34 @@ import cn.hutool.core.bean.BeanException;
 import cn.hutool.core.bean.BeanUtil;
 import org.spring.beans.BeansException;
 import org.spring.beans.PropertyValue;
+import org.spring.beans.factory.config.AutowireCapableBeanFactory;
 import org.spring.beans.factory.config.BeanDefinition;
 import org.spring.beans.factory.config.BeanReference;
 
-public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFactory {
+public abstract class AbstractAutowireCapableBeanFactory
+        extends AbstractBeanFactory implements AutowireCapableBeanFactory {
 
-    private InstantiationStrategy instantiationStrategy= new SimpleInstantiationStrategy();
+    private InstantiationStrategy instantiationStrategy = new SimpleInstantiationStrategy();
 
     @Override
     protected Object createBean(String beanName, BeanDefinition beanDefinition) throws BeansException {
         return doCreateBean(beanName, beanDefinition);
     }
 
+    protected Object createBeanInstance(BeanDefinition beanDefinition) {
+        return getInstantiationStrategy().instantiate(beanDefinition);
+    }
+
     protected Object doCreateBean(String beanName, BeanDefinition beanDefinition) {
-        Class beanClass = beanDefinition.getBeanClass();
-        Object instance = null;
+        Object bean = null;
         try {
-
-            instance = beanClass.getDeclaredConstructor().newInstance(); // 生成实例
-            applyPropertyValues(beanName, instance, beanDefinition);
-
+            bean = createBeanInstance(beanDefinition);
+            applyPropertyValues(beanName, bean, beanDefinition);
         } catch (Exception e) {
             throw new RuntimeException("Instantiation of bean failed", e);
         }
-        addSingleton(beanName, instance);
-        return instance;
+        addSingleton(beanName, bean);
+        return bean;
     }
 
     private void applyPropertyValues(String beanName, Object bean, BeanDefinition beanDefinition) {

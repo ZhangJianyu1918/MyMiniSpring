@@ -7,12 +7,12 @@ public class BeanDefinition {
     private PropertyValues propertyValues;
 
     public BeanDefinition(Class beanClass) {
-        this.beanClass = beanClass;
+        this(beanClass, null);
     }
 
     public BeanDefinition(Class beanClass, PropertyValues propertyValues) {
         this.beanClass = beanClass;
-        this.propertyValues = propertyValues;
+        this.propertyValues = propertyValues == null ? new PropertyValues() : propertyValues;
     }
 
     public Class getBeanClass() {
