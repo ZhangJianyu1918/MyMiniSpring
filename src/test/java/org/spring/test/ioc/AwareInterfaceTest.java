@@ -16,5 +16,7 @@ public class AwareInterfaceTest {
         helloService.test();
         assertThat(helloService.getApplicationContext()).isNotNull();
         assertThat(helloService.getBeanFactory()).isNotNull();
+
+
     }
 }
