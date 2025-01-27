@@ -1,6 +1,6 @@
-package org.spring.beans.context;
+package org.spring.context;
 
-import org.spring.beans.core.io.ResourceLoader;
+import org.spring.core.io.ResourceLoader;
 import org.spring.beans.factory.HierarchicalBeanFactory;
 import org.spring.beans.factory.ListableBeanFactory;
 

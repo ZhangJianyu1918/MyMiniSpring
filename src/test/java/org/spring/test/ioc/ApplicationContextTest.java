@@ -1,7 +1,7 @@
 package org.spring.test.ioc;
 
 import org.junit.jupiter.api.Test;
-import org.spring.beans.context.support.ClassPathXmlApplicationContext;
+import org.spring.context.support.ClassPathXmlApplicationContext;
 import org.spring.test.ioc.bean.Car;
 import org.spring.test.ioc.bean.Person;
 

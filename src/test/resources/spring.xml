@@ -20,4 +20,7 @@ http://www.springframework.org/schema/beans ">
     <bean class="org.spring.test.ioc.common.CustomBeanFactoryPostProcessor"/>
 
     <bean class="org.spring.test.ioc.common.CustomBeanPostProcessor"/>
+
+    <bean id="helloService" class="org.spring.test.ioc.service.HelloService"/>
+
 </beans>

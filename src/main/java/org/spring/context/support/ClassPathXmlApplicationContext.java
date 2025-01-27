@@ -1,4 +1,4 @@
-package org.spring.beans.context.support;
+package org.spring.context.support;
 
 import org.spring.beans.BeansException;
 

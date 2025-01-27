@@ -1,7 +1,7 @@
 package org.spring.test.ioc;
 
 import org.junit.jupiter.api.Test;
-import org.spring.beans.context.support.ClassPathXmlApplicationContext;
+import org.spring.context.support.ClassPathXmlApplicationContext;
 
 public class InitAndDestroyMethodTest {
 
