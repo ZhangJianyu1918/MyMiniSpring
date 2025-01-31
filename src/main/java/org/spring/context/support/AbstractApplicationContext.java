@@ -1,16 +1,27 @@
-package org.spring.beans.context.support;
+package org.spring.context.support;
 
 import org.spring.beans.BeansException;
-import org.spring.beans.context.ConfigurableApplicationContext;
-import org.spring.beans.core.io.DefaultResourceLoader;
+import org.spring.context.ApplicationEvent;
+import org.spring.context.ApplicationListener;
+import org.spring.context.ConfigurableApplicationContext;
+import org.spring.context.event.ApplicationEventMulticaster;
+import org.spring.context.event.ContextClosedEvent;
+import org.spring.context.event.ContextRefreshedEvent;
+import org.spring.context.event.SimpleApplicationEventMulticaster;
+import org.spring.core.io.DefaultResourceLoader;
 import org.spring.beans.factory.ConfigurableListableBeanFactory;
 import org.spring.beans.factory.config.BeanFactoryPostProcessor;
 import org.spring.beans.factory.config.BeanPostProcessor;
 
+import java.util.Collection;
 import java.util.Map;
 
 public abstract class AbstractApplicationContext extends DefaultResourceLoader
         implements ConfigurableApplicationContext {
+
+    public static final String APPLICATION_EVENT_MULTICASTER_BEAN_NAME = "applicationEventMulticaster";
+
+    private ApplicationEventMulticaster applicationEventMulticaster;
 
     @Override
     public void refresh() throws BeansException {
@@ -18,14 +29,27 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
         refreshBeanFactory();
         ConfigurableListableBeanFactory beanFactory = getBeanFactory();
 
+        // 添加ApplicationContextAwareProcessor，
+        // 让继承自ApplicationContextAware的bean能感知bean
+        beanFactory.addBeanPostProcessor(new ApplicationContextAwareProcessor(this));
+
         // 在bean实例化之前，执行BeanFactoryPostProcessor
         invokeBeanFactoryPostProcessors(beanFactory);
 
         // BeanPostProcessor需要提前与其他bean实例化之前注册
         registerBeanPostProcessors(beanFactory);
 
+        // 初始化事件发布者
+        initApplicationEventMulticaster();
+
+        // 注册事件监听器
+        registerListeners();
+
         // 提前实例化单例bean
         beanFactory.preInstantiateSingletons();
+
+        // 发布容器刷新完成事件
+        finishRefresh();
     }
 
     protected void registerBeanPostProcessors(ConfigurableListableBeanFactory beanFactory) {
@@ -84,5 +108,63 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
     @Override
     public String[] getBeanDefinitionNames() {
         return getBeanFactory().getBeanDefinitionNames();
+    }
+
+    public void close() {
+        doClose();
+    }
+
+    protected void doClose() {
+        // 发布容器关闭事件
+        publishEvent(new ContextClosedEvent(this));
+
+        // 执行单例bean的销毁方法
+        destroyBeans();
+    }
+
+    @Override
+    public void publishEvent(ApplicationEvent event) {
+        applicationEventMulticaster.multicastEvent(event);
+    }
+
+    /**
+     * 发布容器刷洗完成事件
+     */
+    public void finishRefresh() {
+        publishEvent(new ContextRefreshedEvent(this));
+    }
+
+    /**
+     * 注册事件监听器
+     */
+    public void registerListeners() {
+        Collection<ApplicationListener> applicationListeners = getBeansOfType(ApplicationListener.class).values();
+        for (ApplicationListener applicationListener : applicationListeners) {
+            applicationEventMulticaster.addApplicationListener(applicationListener);
+        }
+    }
+
+    /**
+     * 初始化事件发布者
+     */
+    public void initApplicationEventMulticaster() {
+        ConfigurableListableBeanFactory beanFactory = getBeanFactory();
+        applicationEventMulticaster = new SimpleApplicationEventMulticaster(beanFactory);
+        beanFactory.addSingleton(APPLICATION_EVENT_MULTICASTER_BEAN_NAME, applicationEventMulticaster);
+    }
+
+
+    protected void destroyBeans() {
+        getBeanFactory().destroySingletons();
+    }
+
+    public void registerShutdownHook() {
+        Thread shutdownHook = new Thread() {
+            @Override
+            public void run() {
+                doClose();
+            }
+        };
+        Runtime.getRuntime().addShutdownHook(shutdownHook);
     }
 }

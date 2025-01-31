@@ -2,10 +2,10 @@ package org.spring.test.ioc;
 
 import cn.hutool.core.io.IoUtil;
 import org.junit.jupiter.api.Test;
-import org.spring.beans.core.io.DefaultResourceLoader;
-import org.spring.beans.core.io.FileSystemResource;
-import org.spring.beans.core.io.Resource;
-import org.spring.beans.core.io.UrlResource;
+import org.spring.core.io.DefaultResourceLoader;
+import org.spring.core.io.FileSystemResource;
+import org.spring.core.io.Resource;
+import org.spring.core.io.UrlResource;
 
 import java.io.InputStream;
 import static org.assertj.core.api.Assertions.assertThat;
