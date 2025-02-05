@@ -1,4 +1,4 @@
-package org.spring.test.ioc.bean;
+package org.spring.test.bean;
 
 public class Car {
     private String brand;

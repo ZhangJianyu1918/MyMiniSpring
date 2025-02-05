@@ -3,7 +3,7 @@ package org.spring.test.ioc;
 import org.junit.jupiter.api.Test;
 import org.spring.beans.factory.config.BeanDefinition;
 import org.spring.beans.factory.support.DefaultListableBeanFactory;
-import org.spring.test.ioc.service.HelloService;
+import org.spring.test.service.HelloService;
 
 public class BeanDefinitionAndBeanDefinitionRegistryTest {
 
@@ -17,6 +17,6 @@ public class BeanDefinitionAndBeanDefinitionRegistryTest {
 
         // 模拟取出bean的过程
         HelloService helloService = (HelloService) defaultListableBeanFactory.getBean("helloService");
-        helloService.test();
+        helloService.sayHello();
     }
 }

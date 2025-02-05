@@ -1,4 +1,4 @@
-package org.spring.test.ioc.common.event;
+package org.spring.test.common.event;
 
 import org.spring.context.ApplicationContext;
 import org.spring.context.event.ApplicationContextEvent;
