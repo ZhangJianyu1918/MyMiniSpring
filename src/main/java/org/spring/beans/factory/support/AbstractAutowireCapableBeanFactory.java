@@ -9,10 +9,7 @@ import org.spring.beans.PropertyValue;
 import org.spring.beans.factory.BeanFactoryAware;
 import org.spring.beans.factory.DisposableBean;
 import org.spring.beans.factory.InitializingBean;
-import org.spring.beans.factory.config.AutowireCapableBeanFactory;
-import org.spring.beans.factory.config.BeanDefinition;
-import org.spring.beans.factory.config.BeanPostProcessor;
-import org.spring.beans.factory.config.BeanReference;
+import org.spring.beans.factory.config.*;
 
 import java.lang.reflect.Method;
 
@@ -23,8 +20,41 @@ public abstract class AbstractAutowireCapableBeanFactory
 
     @Override
     protected Object createBean(String beanName, BeanDefinition beanDefinition) throws BeansException {
+        // 如果bean需要代理，则直接返回代理对象
+        Object bean = resolveBeforeInstantiation(beanName, beanDefinition);
+        if (bean != null) {
+            return bean;
+        }
         return doCreateBean(beanName, beanDefinition);
     }
+
+    /**
+     * 执行InstantiationAwareBeanPostProcessor的方法，如果bean需要代理，直接返回代理对象
+     * @param beanName
+     * @param beanDefinition
+     * @return
+     */
+    private Object resolveBeforeInstantiation(String beanName, BeanDefinition beanDefinition) {
+
+        Object bean = applyBeanPostProcessorBeforeInitialization(beanDefinition.getBeanClass(), beanName);
+        if (bean != null) {
+            bean = applyBeanPostProcessorAfterInitialization(bean, beanName);
+        }
+        return bean;
+    }
+
+    private Object applyBeanPostProcessorBeforeInitialization(Class beanClass, String beanName) {
+        for (BeanPostProcessor beanPostProcessor : getBeanPostProcessorList()) {
+            if (beanPostProcessor instanceof InstantiationAwareBeanPostProcessor) {
+                Object result = ((InstantiationAwareBeanPostProcessor) beanPostProcessor).postProcessBeforeInstantiation(beanClass, beanName);
+                if (result != null) {
+                    return result;
+                }
+            }
+        }
+        return null;
+    }
+
 
     protected Object createBeanInstance(BeanDefinition beanDefinition) {
         return getInstantiationStrategy().instantiate(beanDefinition);
@@ -84,7 +114,8 @@ public abstract class AbstractAutowireCapableBeanFactory
         return wrappedBean;
     }
 
-    private Object applyBeanPostProcessorAfterInitialization(Object existingBean, String beanName) {
+    @Override
+    public Object applyBeanPostProcessorAfterInitialization(Object existingBean, String beanName) throws BeansException{
         Object result = existingBean;
         for (BeanPostProcessor processor : this.getBeanPostProcessorList()) {
             Object current = processor.postProcessAfterInitialization(result, beanName);
@@ -117,7 +148,8 @@ public abstract class AbstractAutowireCapableBeanFactory
         }
     }
 
-    private Object applyBeanPostProcessorBeforeInitialization(Object existingBean, String beanName) throws BeansException{
+    @Override
+    public Object applyBeanPostProcessorBeforeInitialization(Object existingBean, String beanName) throws BeansException{
         Object result = existingBean;
         for (BeanPostProcessor processor : getBeanPostProcessorList()) {
             Object current = processor.postProcessBeforeInitialization(result, beanName);

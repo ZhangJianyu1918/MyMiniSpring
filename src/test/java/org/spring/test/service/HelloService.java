@@ -1,4 +1,4 @@
-package org.spring.test.ioc.service;
+package org.spring.test.service;
 
 import org.spring.beans.BeansException;
 import org.spring.beans.factory.BeanFactory;
@@ -12,7 +12,7 @@ public class HelloService implements ApplicationContextAware, BeanFactoryAware {
 
     private BeanFactory beanFactory;
 
-    public String test() {
+    public String sayHello() {
         System.out.println("hello");
         return "hello";
     }

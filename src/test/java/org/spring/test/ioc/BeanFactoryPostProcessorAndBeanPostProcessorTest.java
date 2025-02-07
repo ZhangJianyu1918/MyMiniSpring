@@ -3,10 +3,10 @@ package org.spring.test.ioc;
 import org.junit.jupiter.api.Test;
 import org.spring.beans.factory.support.DefaultListableBeanFactory;
 import org.spring.beans.factory.xml.XmlBeanDefinitionReader;
-import org.spring.test.ioc.bean.Car;
-import org.spring.test.ioc.bean.Person;
-import org.spring.test.ioc.common.CustomBeanFactoryPostProcessor;
-import org.spring.test.ioc.common.CustomBeanPostProcessor;
+import org.spring.test.bean.Car;
+import org.spring.test.bean.Person;
+import org.spring.test.common.CustomBeanFactoryPostProcessor;
+import org.spring.test.common.CustomBeanPostProcessor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

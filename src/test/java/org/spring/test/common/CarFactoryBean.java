@@ -1,7 +1,7 @@
-package org.spring.test.ioc.common;
+package org.spring.test.common;
 
 import org.spring.beans.factory.FactoryBean;
-import org.spring.test.ioc.bean.Car;
+import org.spring.test.bean.Car;
 
 public class CarFactoryBean implements FactoryBean<Car> {
     private String brand;

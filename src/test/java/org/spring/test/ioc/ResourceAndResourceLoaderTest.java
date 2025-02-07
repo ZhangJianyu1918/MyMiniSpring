@@ -24,7 +24,7 @@ public class ResourceAndResourceLoaderTest {
         assertThat(classPathContent).isEqualTo("hello world");
 
         // 加载文件系统资源
-        Resource systemFile = defaultResourceLoader.getResource("src/test/resources/hello.txt");
+        Resource systemFile = defaultResourceLoader.getResource("src/sayHello/resources/hello.txt");
         assertThat(systemFile).isInstanceOf(FileSystemResource.class);
         InputStream systemFileInputStream = systemFile.getInputStream();
         String systemFileContent = IoUtil.readUtf8(systemFileInputStream);

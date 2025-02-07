@@ -7,8 +7,8 @@ import org.spring.beans.PropertyValues;
 import org.spring.beans.factory.config.BeanDefinition;
 import org.spring.beans.factory.config.BeanReference;
 import org.spring.beans.factory.support.DefaultListableBeanFactory;
-import org.spring.test.ioc.bean.Car;
-import org.spring.test.ioc.bean.Person;
+import org.spring.test.bean.Car;
+import org.spring.test.bean.Person;
 
 public class PopulateBeanWithPropertyValuesTest {
 
