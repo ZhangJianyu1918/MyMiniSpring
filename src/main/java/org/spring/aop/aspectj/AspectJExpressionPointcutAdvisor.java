@@ -4,6 +4,12 @@ import org.aopalliance.aop.Advice;
 import org.spring.aop.Pointcut;
 import org.spring.aop.PointcutAdvisor;
 
+/**
+ * aspectJ表达式的advisor
+ *
+ * @author derekyi
+ * @date 2020/12/6
+ */
 public class AspectJExpressionPointcutAdvisor implements PointcutAdvisor {
 
     private AspectJExpressionPointcut pointcut;
@@ -12,13 +18,16 @@ public class AspectJExpressionPointcutAdvisor implements PointcutAdvisor {
 
     private String expression;
 
-    public void setAdvice(Advice advice) {
-        this.advice = advice;
-    }
-
     public void setExpression(String expression) {
         this.expression = expression;
-        pointcut = new AspectJExpressionPointcut(this.expression);
+    }
+
+    @Override
+    public Pointcut getPointcut() {
+        if (pointcut == null) {
+            pointcut = new AspectJExpressionPointcut(expression);
+        }
+        return pointcut;
     }
 
     @Override
@@ -26,8 +35,7 @@ public class AspectJExpressionPointcutAdvisor implements PointcutAdvisor {
         return advice;
     }
 
-    @Override
-    public Pointcut getPointcut() {
-        return pointcut;
+    public void setAdvice(Advice advice) {
+        this.advice = advice;
     }
 }
