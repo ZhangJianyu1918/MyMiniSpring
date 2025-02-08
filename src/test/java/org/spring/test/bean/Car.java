@@ -1,5 +1,8 @@
 package org.spring.test.bean;
 
+import org.spring.stereotype.Component;
+
+@Component
 public class Car {
     private String brand;
 
