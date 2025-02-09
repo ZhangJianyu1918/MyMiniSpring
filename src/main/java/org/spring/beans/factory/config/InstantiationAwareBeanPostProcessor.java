@@ -1,6 +1,7 @@
 package org.spring.beans.factory.config;
 
 import org.spring.beans.BeansException;
+import org.spring.beans.PropertyValues;
 
 public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor{
 
@@ -12,4 +13,10 @@ public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor{
      * @throws BeansException
      */
     Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) throws BeansException;
+
+
+    PropertyValues postProcessPropertyValues(
+            PropertyValues propertyValues,
+            Object bean,
+            String beanName) throws BeansException;
 }

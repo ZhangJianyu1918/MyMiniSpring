@@ -6,6 +6,7 @@ import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.StrUtil;
 import org.spring.beans.BeansException;
 import org.spring.beans.PropertyValue;
+import org.spring.beans.PropertyValues;
 import org.spring.beans.factory.BeanFactoryAware;
 import org.spring.beans.factory.DisposableBean;
 import org.spring.beans.factory.InitializingBean;
@@ -64,10 +65,13 @@ public abstract class AbstractAutowireCapableBeanFactory
         Object bean = null;
         try {
             bean = createBeanInstance(beanDefinition);
+            // 在设置bean属性之前，允许BeanPostProcessor修改属性值
+            applyBeanPostProcessorBeforeApplyingPropertyValues(beanName, bean, beanDefinition);
             // 给bean填充属性
             applyPropertyValues(beanName, bean, beanDefinition);
             // 执行bean的初始化方法和BeanPostProcessor的前置和后置过程
-            bean = initializeBean(beanName, bean, beanDefinition);
+//            bean = initializeBean(beanName, bean, beanDefinition);
+            initializeBean(beanName, bean, beanDefinition);
         } catch (Exception e) {
             throw new RuntimeException("Instantiation of bean failed", e);
         }
@@ -78,6 +82,27 @@ public abstract class AbstractAutowireCapableBeanFactory
             addSingleton(beanName, bean);
         }
         return bean;
+    }
+
+    /**
+     * 在设置bean属性之前，允许BeanPostProcessor修改属性值
+     * @param beanName
+     * @param bean
+     * @param beanDefinition
+     */
+    private void applyBeanPostProcessorBeforeApplyingPropertyValues(String beanName, Object bean, BeanDefinition beanDefinition) {
+        for (BeanPostProcessor beanPostProcessor : getBeanPostProcessorList()) {
+            if (beanPostProcessor instanceof InstantiationAwareBeanPostProcessor) {
+                PropertyValues propertyValues =
+                        ((InstantiationAwareBeanPostProcessor) beanPostProcessor)
+                                .postProcessPropertyValues(beanDefinition.getPropertyValues(), bean, beanName);
+                if (propertyValues != null) {
+                    for (PropertyValue propertyValue : propertyValues.getPropertyValues()) {
+                        beanDefinition.getPropertyValues().addPropertyValue(propertyValue);
+                    }
+                }
+            }
+        }
     }
 
     /**
