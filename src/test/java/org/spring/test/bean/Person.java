@@ -2,12 +2,16 @@ package org.spring.test.bean;
 
 import org.spring.beans.factory.DisposableBean;
 import org.spring.beans.factory.InitializingBean;
+import org.spring.beans.factory.annotation.Autowired;
+import org.spring.stereotype.Component;
 
+@Component
 public class Person implements InitializingBean, DisposableBean {
     private String name;
 
     private int age;
 
+    @Autowired
     private Car car;
 
     public void customInitMethod() {

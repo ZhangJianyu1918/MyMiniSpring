@@ -2,6 +2,8 @@ package org.spring.beans.factory.config;
 
 import org.spring.beans.PropertyValues;
 
+import java.util.Objects;
+
 public class BeanDefinition {
 
     public static String SCOPE_SINGLETON = "singleton";
@@ -85,5 +87,18 @@ public class BeanDefinition {
 
     public void setDestroyMethodName(String destroyMethodName) {
         this.destroyMethodName = destroyMethodName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BeanDefinition that = (BeanDefinition) o;
+        return beanClass.equals(that.beanClass);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(beanClass);
     }
 }
