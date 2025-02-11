@@ -4,7 +4,7 @@ import org.aopalliance.intercept.MethodInterceptor;
 
 public class AdvisedSupport {
 
-    private boolean proxyTargetClass = false;
+    private boolean proxyTargetClass = true;
 
     private TargetSource targetSource;
 

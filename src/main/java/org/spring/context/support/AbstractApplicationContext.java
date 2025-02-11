@@ -8,6 +8,7 @@ import org.spring.context.event.ApplicationEventMulticaster;
 import org.spring.context.event.ContextClosedEvent;
 import org.spring.context.event.ContextRefreshedEvent;
 import org.spring.context.event.SimpleApplicationEventMulticaster;
+import org.spring.core.convert.ConversionService;
 import org.spring.core.io.DefaultResourceLoader;
 import org.spring.beans.factory.ConfigurableListableBeanFactory;
 import org.spring.beans.factory.config.BeanFactoryPostProcessor;
@@ -20,6 +21,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
         implements ConfigurableApplicationContext {
 
     public static final String APPLICATION_EVENT_MULTICASTER_BEAN_NAME = "applicationEventMulticaster";
+
+    public static final String CONVERSION_SERVICE_BEAN_NAME = "conversionService";
 
     private ApplicationEventMulticaster applicationEventMulticaster;
 
@@ -46,10 +49,24 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
         registerListeners();
 
         // 提前实例化单例bean
-        beanFactory.preInstantiateSingletons();
-
+//        beanFactory.preInstantiateSingletons();
+        // 注册类型转化器和提前实例化单例bean
+        finishBeanFactoryInitialization(beanFactory);
         // 发布容器刷新完成事件
         finishRefresh();
+    }
+
+    protected void finishBeanFactoryInitialization(ConfigurableListableBeanFactory beanFactory) {
+        // 设置类型转化器
+        if (beanFactory.containsBean(CONVERSION_SERVICE_BEAN_NAME)) {
+            Object conversionService = beanFactory.getBean(CONVERSION_SERVICE_BEAN_NAME);
+            if (conversionService instanceof ConversionService) {
+                beanFactory.setConversionService((ConversionService) conversionService);
+            }
+        }
+
+        // 提前实例化单例bean
+        beanFactory.preInstantiateSingletons();
     }
 
     protected void registerBeanPostProcessors(ConfigurableListableBeanFactory beanFactory) {
@@ -171,5 +188,10 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
             }
         };
         Runtime.getRuntime().addShutdownHook(shutdownHook);
+    }
+
+    @Override
+    public boolean containsBean(String name) {
+        return getBeanFactory().containsBean(name);
     }
 }
