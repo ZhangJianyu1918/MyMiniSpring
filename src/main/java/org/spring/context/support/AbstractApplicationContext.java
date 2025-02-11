@@ -48,10 +48,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
         // 注册事件监听器
         registerListeners();
 
-        // 提前实例化单例bean
-//        beanFactory.preInstantiateSingletons();
         // 注册类型转化器和提前实例化单例bean
         finishBeanFactoryInitialization(beanFactory);
+
         // 发布容器刷新完成事件
         finishRefresh();
     }

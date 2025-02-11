@@ -4,23 +4,29 @@ import org.spring.beans.BeansException;
 import org.spring.beans.factory.DisposableBean;
 import org.spring.beans.factory.config.SingletonBeanRegistry;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
 
-    private Map<String, Object> stringObjectMap = new HashMap<>();
+    private Map<String, Object> singletonObjects = new HashMap<>();
+
+    protected Map<String, Object> earlySingletonObjects = new HashMap<>();
 
     private final Map<String, DisposableBean> disposableBeanMap = new HashMap<>();
 
     @Override
     public Object getSingleton(String beanName) {
-        return stringObjectMap.get(beanName);
+        Object bean = singletonObjects.get(beanName);
+        if (bean == null) {
+            bean = earlySingletonObjects.get(beanName);
+        }
+        return bean;
     }
 
     public void addSingleton(String beanName, Object singletonObject) {
-        stringObjectMap.put(beanName, singletonObject);
+        singletonObjects.put(beanName, singletonObject);
     }
 
     public void registerDisposableBean(String beanName, DisposableBean bean) {
@@ -28,7 +34,7 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
     }
 
     public void destroySingletons() {
-        ArrayList<String> beanNames = new ArrayList<>(disposableBeanMap.keySet());
+        Set<String> beanNames = disposableBeanMap.keySet();
         for (String beanName : beanNames) {
             DisposableBean disposableBean = disposableBeanMap.remove(beanName);
             try {
