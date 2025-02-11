@@ -13,6 +13,8 @@ import org.spring.beans.factory.config.InstantiationAwareBeanPostProcessor;
 import org.spring.beans.factory.support.DefaultListableBeanFactory;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author derekyi
@@ -21,6 +23,8 @@ import java.util.Collection;
 public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPostProcessor, BeanFactoryAware {
 
     private DefaultListableBeanFactory beanFactory;
+
+    private Set<Object> earlyProxyReference = new HashSet<>();
 
     @Override
     public PropertyValues postProcessPropertyValues(PropertyValues propertyValues, Object bean, String beanName) throws BeansException {
@@ -50,10 +54,23 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+        if (!earlyProxyReference.contains(beanName)) {
+            return wrapIfNecessary(bean, beanName);
+        }
+        return bean;
+    }
+
+    @Override
+    public Object getEarlyBeanReference(Object bean, String beanName) throws BeansException {
+        earlyProxyReference.add(beanName);
+        return wrapIfNecessary(bean, beanName);
+    }
+
+    private Object wrapIfNecessary(Object bean, String beanName) {
         Class beanClass = bean.getClass();
         //避免死循环
         if (isInfrastructureClass(beanClass)) {
-            return null;
+            return bean;
         }
 
         Collection<AspectJExpressionPointcutAdvisor> advisors = beanFactory.getBeansOfType(AspectJExpressionPointcutAdvisor.class).values();
@@ -74,7 +91,7 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
         } catch (Exception ex) {
             throw new BeansException("Error create proxy bean for: " + beanName, ex);
         }
-        return null;
+        return bean;
     }
 
     @Override

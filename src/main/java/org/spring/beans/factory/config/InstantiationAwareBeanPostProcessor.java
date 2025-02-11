@@ -23,8 +23,21 @@ public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor{
      */
     boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException;
 
+    /**
+     * bean实例化之后，设置属性之前执行
+     * @param propertyValues
+     * @param bean
+     * @param beanName
+     * @return
+     * @throws BeansException
+     */
     PropertyValues postProcessPropertyValues(
             PropertyValues propertyValues,
             Object bean,
             String beanName) throws BeansException;
+
+    default Object getEarlyBeanReference(Object bean, String beanName) throws BeansException{
+        return bean;
+    }
+
 }
